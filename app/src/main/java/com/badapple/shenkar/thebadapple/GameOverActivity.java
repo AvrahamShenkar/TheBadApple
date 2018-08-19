@@ -1,21 +1,25 @@
-package com.android.gradient.thebadapple;
+package com.badapple.shenkar.thebadapple;
 
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.ImageButton;
+
+import com.android.gradient.thebadapple.R;
 
 public class GameOverActivity extends AppCompatActivity{
 
     private int score;
     private int bestScore;
 
+    private SoundPlayer soundPlayer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_over);
+        soundPlayer = new SoundPlayer(this);
 
         score = 0;
         bestScore = 0;
@@ -33,8 +37,10 @@ public class GameOverActivity extends AppCompatActivity{
     }
 
     public void StartOver_onClick(View v) {
+        soundPlayer.PlayPressBTN();
         super.finish();
     }
+
 }
 
 

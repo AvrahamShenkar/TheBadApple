@@ -1,10 +1,13 @@
-package com.android.gradient.thebadapple;
+package com.badapple.shenkar.thebadapple;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.os.Handler;
+
+import com.android.gradient.thebadapple.R;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -19,17 +22,27 @@ public class MainActivity extends AppCompatActivity{
     private int lastScore;
     private int bestScore;
 
+    private BackGroundMusic currMusic;
+
+    private SoundPlayer soundPlayer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         lastScore = bestScore = 0;
+        soundPlayer = new SoundPlayer(this);
+        currMusic = BackGroundMusic.MainScreen;
+        soundPlayer.PlayBGMusic(currMusic);
     }
 
 
 
     public void NewGame_onClick(View v) {
-
+        soundPlayer.StopMusic();
+        soundPlayer.PlayPressBTN();
+        currMusic = BackGroundMusic.GameView;
+        soundPlayer.PlayBGMusic(currMusic);
         gameView = new GameView(this);
         setContentView(gameView);
         hasFinished = false;
@@ -61,7 +74,9 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void gameOver(int score){
-
+        currMusic = BackGroundMusic.None;
+        soundPlayer.PlayBGMusic(currMusic);
+        soundPlayer.PlayGameOver();
         lastScore = score;
         if(lastScore > bestScore) { bestScore = lastScore;}
 
@@ -80,8 +95,28 @@ public class MainActivity extends AppCompatActivity{
         // check if the request code is same as what is passed  here it is 2
         if(requestCode==2)
         {
-
             setContentView(R.layout.activity_main);
+            soundPlayer.PlayBGMusic(BackGroundMusic.MainScreen);
         }
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        soundPlayer.PlayBGMusic(currMusic);
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        soundPlayer.StopMusic();
+    }
+
+    @Override
+    protected void onDestroy() {
+        soundPlayer.StopMusic();
+        super.onDestroy();
+    }
+
+
 }

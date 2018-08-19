@@ -1,4 +1,4 @@
-package com.android.gradient.thebadapple;
+package com.badapple.shenkar.thebadapple;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -9,8 +9,13 @@ import android.graphics.Typeface;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.android.gradient.thebadapple.R;
+
 
 public class GameView extends View {
+
+    private boolean isStart;
+    private boolean isHitPosion;
 
     private int lifes;
     private int score;
@@ -32,18 +37,22 @@ public class GameView extends View {
     private int poisonSpeed;
     private int poisonCount;
 
-    private Bitmap wormImage;
+    private Bitmap[] wormImage;
     private Bitmap seedImage;
     private Bitmap posionImage;
     private Bitmap deadWormImage;
-    private Bitmap backgrountImage;
     private Bitmap appleHurtImage;
-    private Bitmap badAppleHurtImage;
+    private Bitmap leftSkin;
+    private Bitmap rightSkin;
     private Paint scoreText;
+
+    private SoundPlayer soundPlayer;
 
     public GameView(Context context){
         super(context);
+        setBackgroundResource(R.drawable.game_bground);
 
+        isStart = true;
         gaps = 10;
         score = 0;
         lifes = 3;
@@ -52,18 +61,22 @@ public class GameView extends View {
         seedY = poisonY = 0;
         seedCount = poisonCount;
 
-        wormImage = BitmapFactory.decodeResource(getResources(), R.drawable.worm2);
+        wormImage = new Bitmap[2];
+        wormImage[0] = BitmapFactory.decodeResource(getResources(), R.drawable.worm1);
+        wormImage[1] = BitmapFactory.decodeResource(getResources(), R.drawable.worm2);
         seedImage = BitmapFactory.decodeResource(getResources(), R.drawable.seed);
         deadWormImage = BitmapFactory.decodeResource(getResources(), R.drawable.dead_worm);
         posionImage = BitmapFactory.decodeResource(getResources(), R.drawable.posion);
-        backgrountImage = BitmapFactory.decodeResource(getResources(), R.drawable.game_bground);
         appleHurtImage = BitmapFactory.decodeResource(getResources(), R.drawable.apple_hurt);
-
+        leftSkin = BitmapFactory.decodeResource(getResources(), R.drawable.left);
+        rightSkin = BitmapFactory.decodeResource(getResources(), R.drawable.right);
         scoreText = new Paint();
         scoreText.setTextSize(70);
         scoreText.setTypeface(Typeface.DEFAULT_BOLD);
         scoreText.setAntiAlias(true);
+        isHitPosion = false;
 
+        soundPlayer = new SoundPlayer(this.getContext());
 
     }
     public int getLifes(){ return lifes;}
@@ -73,20 +86,43 @@ public class GameView extends View {
     protected void onDraw(Canvas canvas){
         super.onDraw(canvas);
 
-        boolean isHitPosion = false;
+
+        if (isHitPosion) {
+            try {
+                Thread.sleep(1000);
+            } catch (Exception ex) {}
+        }
+
+        isHitPosion = false;
 
         screenWidth = canvas.getWidth();
         screenHeight = canvas.getHeight();
         wormY = screenHeight - 200;
 
         int minWormX = gaps;
-        int maxWormX = screenWidth - (gaps*2) - wormImage.getWidth();
-        wormX += wormSpeed;
+        int maxWormX = screenWidth - (gaps*2) - wormImage[0].getWidth();
+        if(isStart) {
+            wormX = screenWidth/2;
+        }
+        else {
+            wormX += wormSpeed;
+        }
+
+
 
         if(wormX < minWormX) {wormX = minWormX;}
         if(wormX > maxWormX) {wormX = maxWormX;}
 
-
+        Bitmap leftBm = Bitmap.createScaledBitmap(leftSkin, (int)(screenWidth*0.15), screenHeight, false);
+        Bitmap rightBm = Bitmap.createScaledBitmap(rightSkin, (int)(screenWidth*0.15), screenHeight, false);
+        canvas.drawBitmap(leftBm, 0, 0, null);
+        canvas.drawBitmap(rightBm, screenWidth - rightBm.getWidth(), 0, null);
+        if(isHitSkins(leftBm, rightBm, screenWidth))
+        {
+            isHitPosion = true;
+            lifes--;
+            isStart = true;
+        }
 
         if (seedY <= 0 || seedY > (screenHeight+10)){
             //start a new seed
@@ -102,6 +138,7 @@ public class GameView extends View {
         if(iSHitWorm(seedX, seedY)){
             score += 10;
             seedY = gaps;
+            soundPlayer.PlayHit();
         }
 
         if (poisonY <= 0 || poisonY > (screenHeight+10)){
@@ -119,9 +156,11 @@ public class GameView extends View {
             isHitPosion = true;
             poisonY = gaps;
             lifes--;
+            soundPlayer.PlaySpray();
+            isStart = true;
         }
 
-        canvas.drawBitmap(backgrountImage, 0, 0, null);
+       // canvas.drawB(backgrountImage, 0, 0, null);
         canvas.drawBitmap(seedImage, seedX, seedY, null);
         canvas.drawBitmap(posionImage, poisonX, poisonY, null);
 
@@ -135,20 +174,19 @@ public class GameView extends View {
 
         if(!isHitPosion){
            // canvas.drawBitmap(wormImage, 0, 0, null);
-            canvas.drawBitmap(wormImage, wormX, wormY, null);
+            if(wormSpeed < 0){ canvas.drawBitmap(wormImage[0], wormX, wormY, null);}
+            else { canvas.drawBitmap(wormImage[1], wormX, wormY, null);}
             canvas.drawBitmap(posionImage, poisonX, poisonY, null);
         }
         else{
-            canvas.drawBitmap(deadWormImage, wormX, wormY, null);
+            canvas.drawBitmap(deadWormImage, wormX, (int)(wormY*0.99), null);
             //sleep
-            try {
-                Thread.sleep(500);
-            }
-            catch(Exception ex){}
+
         }
 
+        if(!isStart){
         if(wormSpeed >= 0) {wormSpeed += 2;}
-        else {wormSpeed -= 2;}
+        else {wormSpeed -= 2;}}
     }
 
     @Override
@@ -159,16 +197,30 @@ public class GameView extends View {
                 wormSpeed = -10;
             else
                 wormSpeed = +10;
+
+            isStart = false;
         }
         return true;
     }
 
-    private boolean iSHitWorm(int x, int y){
-        if( (wormX < x) && (x < (wormX + wormImage.getWidth())) && (wormY < y ) && (y < (wormY + wormImage.getHeight())))  {
+    private boolean isHitSkins(Bitmap left, Bitmap right, int canvasWidth){
+
+        int leftMin = (int)(left.getWidth()*0.6);
+        int rightMax = (int)((canvasWidth - right.getWidth())*1.1);
+
+        if(wormX < leftMin) {return true;}
+        if((wormX + wormImage[0].getWidth()) > rightMax ) {return true;}
+
+        return false;
+    }
+
+    private boolean iSHitWorm(int x, int y) {
+        if ((wormX < x) && (x < (wormX + wormImage[0].getWidth())) && (wormY < y) && (y < (wormY + wormImage[0].getHeight()))) {
             return true;
         }
         return false;
     }
+
 }
 
 
