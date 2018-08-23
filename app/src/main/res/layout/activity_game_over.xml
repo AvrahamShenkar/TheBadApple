@@ -7,6 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:layoutDirection="ltr"
     android:background="@drawable/apples_bg"
     tools:context="com.android.gradient.thebadapple.GameOverActivity">
 
@@ -18,7 +19,7 @@
         android:layout_alignBottom="@+id/scoreSection"
         android:layout_centerHorizontal="true"
         android:src="@drawable/game_over_logo" />
-
+    
     <TextView
         android:id="@+id/scoreSection"
         android:layout_width="match_parent"

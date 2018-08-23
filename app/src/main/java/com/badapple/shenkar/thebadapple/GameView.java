@@ -185,8 +185,8 @@ public class GameView extends View {
         }
 
         if(!isStart){
-        if(wormSpeed >= 0) {wormSpeed += 2;}
-        else {wormSpeed -= 2;}}
+        if(wormSpeed >= 0) {wormSpeed += 1;}
+        else {wormSpeed -= 1;}}
     }
 
     @Override

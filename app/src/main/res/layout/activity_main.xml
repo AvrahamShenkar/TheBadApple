@@ -11,6 +11,45 @@
     tools:context="com.android.gradient.thebadapple.MainActivity">
 
 
+    <TextView
+        android:id="@+id/bestScoreTxt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/logoImage"
+        android:layout_marginEnd="156dp"
+        android:layout_marginRight="156dp"
+        android:layout_toLeftOf="@+id/SettingsImage"
+        android:layout_toStartOf="@+id/SettingsImage"
+        android:text="Best Score: "
+        android:textAlignment="center"
+        android:textColor="@color/colorAccent"
+        android:textSize="15dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/bestScoreVal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/bestScoreTxt"
+        android:layout_marginEnd="41dp"
+        android:layout_marginRight="41dp"
+        android:layout_toLeftOf="@+id/SettingsImage"
+        android:layout_toStartOf="@+id/SettingsImage"
+        android:text="0"
+        android:textAlignment="center"
+        android:textColor="@color/colorAccent"
+        android:textSize="18dp"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/SettingsImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:onClick="onSettings_click"
+        android:src="@drawable/settings_icon" />
 
     <ImageView
         android:id="@+id/logoImage"
@@ -18,7 +57,7 @@
         android:layout_height="300dp"
         android:layout_centerHorizontal="true"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="5dp"
+        android:layoutDirection="ltr"
         android:src="@drawable/game_logo" />
 
 
@@ -29,7 +68,28 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/logoImage"
+        android:layout_marginTop="-5dp"
         android:onClick="NewGame_onClick"/>
+
+    <ImageButton
+        android:id="@+id/buttonTutorial"
+        android:background="@drawable/tutorial_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/buttonPlay"
+        android:layout_marginTop="-20dp"
+        android:onClick="Tutorial_onClick"/>
+
+    <ImageButton
+        android:id="@+id/buttonAbout"
+        android:background="@drawable/about_us"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/buttonTutorial"
+        android:layout_marginTop="-20dp"
+        android:onClick="AboutUs_onClick"/>
 
 
 </RelativeLayout>
